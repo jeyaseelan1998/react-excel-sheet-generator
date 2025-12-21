@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { getCookie } from '../utils/storage';
 
-const Guest = () => {
+const Protected = () => {
 
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (getCookie()) {
-      navigate('/', { replace: true });
+    if (!getCookie()) {
+      navigate('/guest/login', { replace: true });
     }
   }, [])
 
@@ -18,4 +19,4 @@ const Guest = () => {
   )
 }
 
-export default Guest
+export default Protected

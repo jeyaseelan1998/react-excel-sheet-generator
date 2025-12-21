@@ -1,10 +1,10 @@
 import Cookies from 'universal-cookie';
 
-const cookies = new Cookies();
+const cookies = new Cookies(null, { path: '/' });
 
 export const getCookie = (key = 'token') => cookies.get(key);
 
-export const setCookie = (key = 'token', value, options) => cookies.set(key, value, options);
+export const setCookie = (value, key = 'token', options) => cookies.set(key, value, options);
 // OPTIONS arg
 // {
 //     path?: string;

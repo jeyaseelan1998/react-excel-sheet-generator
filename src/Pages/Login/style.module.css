@@ -4,6 +4,12 @@
     place-items: center;
 }
 
+.loginWrapper > div {
+    max-width: 420px;
+    min-width: 320px;
+    margin: auto;
+}
+
 .image {
     width: 150px;
     margin: auto;
