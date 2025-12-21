@@ -9,6 +9,7 @@ const NotFound = lazy(() => import('./Layout/NotFound'));
 const Login = lazy(() => import('./Pages/Login'));
 const Home = lazy(() => import('./Pages/Home'));
 const History = lazy(() => import('./Pages/History'));
+const BillEntryForm = lazy(() => import('./Pages/BillEntry/Form'));
 
 const Admin = lazy(() => import('./Pages/Admin'));
 
@@ -20,6 +21,7 @@ const App = () => {
       </Route>
       <Route path='/' element={<Protected />}>
         <Route index element={<Home />} />
+        <Route path='bill-entry/create' element={<BillEntryForm />} />
         <Route path='history' element={<History />} />
       </Route>
       <Route path='/admin' element={<ProtectedAdmin />}>

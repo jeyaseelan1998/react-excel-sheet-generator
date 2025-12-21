@@ -43,7 +43,7 @@ const Header = () => {
                             nav.map(({ id, label, url }) => {
                                 return (
                                     <li className="nav-item" key={id}>
-                                        <Link class={`nav-link${pathname === url ? ' active' : ''}`} aria-current="page" to={url}>{label}</Link>
+                                        <Link className={`nav-link${pathname === url ? ' active' : ''}`} aria-current="page" to={url}>{label}</Link>
                                     </li>
                                 )
                             })
