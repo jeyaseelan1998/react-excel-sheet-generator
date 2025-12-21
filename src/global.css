@@ -1,0 +1,15 @@
+:root {
+    --inter: "Inter", sans-serif;
+    --bree-serif: "Bree Serif", serif;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+}
+
+body {
+    font-family: var(inter);
+}
