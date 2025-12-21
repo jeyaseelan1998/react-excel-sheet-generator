@@ -2,12 +2,12 @@ import React from 'react';
 
 import { Center } from '../../components';
 
-const Home = () => {
+const Admin = () => {
   return (
     <Center>
-      Home
+      Admin
     </Center>
   )
 }
 
-export default Home;
+export default Admin;

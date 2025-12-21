@@ -2,12 +2,10 @@ import React from 'react';
 
 import { Center } from '../../components';
 
-const Home = () => {
+const History = () => {
   return (
-    <Center>
-      Home
-    </Center>
+    <Center>History</Center>
   )
 }
 
-export default Home;
+export default History;

@@ -1,0 +1,21 @@
+.notfoundContainer {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.imageWrap {
+    width: 320px;
+    position: relative;
+}
+
+.imageWrap .sizer {
+    padding-top: 100%;
+}
+
+.imageWrap img {
+    position: absolute;
+    top: 0%;
+    left: 0;
+    z-index: 1;
+}

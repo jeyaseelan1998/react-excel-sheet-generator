@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { getCookie } from '../utils/storage';
 import Header from './Header';
 
-const Protected = () => {
+const ProtectedAdmin = () => {
 
   const navigate = useNavigate();
 
@@ -22,4 +22,4 @@ const Protected = () => {
   )
 }
 
-export default Protected
+export default ProtectedAdmin
