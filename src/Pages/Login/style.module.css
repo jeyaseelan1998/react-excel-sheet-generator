@@ -12,5 +12,6 @@
 
 .image {
     width: 150px;
+    min-height: 150px;
     margin: auto;
 }
