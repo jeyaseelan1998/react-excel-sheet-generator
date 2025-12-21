@@ -1,10 +1,14 @@
 import React from 'react';
 
 import { Center } from '../../components';
+import MetaTag from '../../components/MetaTag';
 
 const History = () => {
   return (
-    <Center>History</Center>
+    <>
+      <MetaTag title="History" />
+      <Center>History</Center>
+    </>
   )
 }
 

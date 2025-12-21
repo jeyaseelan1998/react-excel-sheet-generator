@@ -1,12 +1,16 @@
 import React from 'react';
 
 import { Center } from '../../components';
+import MetaTag from '../../components/MetaTag';
 
 const Admin = () => {
   return (
-    <Center>
-      Admin
-    </Center>
+    <>
+      <MetaTag title="Admin" />
+      <Center>
+        Admin
+      </Center>
+    </>
   )
 }
 

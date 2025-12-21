@@ -4,6 +4,7 @@ import { login_img } from '../../components/Images';
 import { setCookie } from '../../utils/storage';
 
 import style from './style.module.css';
+import MetaTag from '../../components/MetaTag';
 
 const Login = () => {
 
@@ -15,6 +16,8 @@ const Login = () => {
   }
 
   return (
+    <>
+    <MetaTag title="Login" />
     <Center>
       <form className={style.loginWrapper} onSubmit={onSubmit}>
         <div className="card">
@@ -43,6 +46,7 @@ const Login = () => {
         </div>
       </form>
     </Center>
+    </>
   )
 }
 
