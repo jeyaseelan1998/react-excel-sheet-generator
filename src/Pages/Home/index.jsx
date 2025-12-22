@@ -4,6 +4,7 @@ import { Center, Text } from '../../components';
 import MetaTag from '../../components/MetaTag';
 import { Link } from 'react-router-dom';
 import { FaArrowAltCircleRight } from "../../components/Icons";
+import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 
 
 const types = [
@@ -18,6 +19,7 @@ const Home = () => {
   return (
     <>
       <MetaTag title="Home" />
+      <HeaderSpacer />
       <Center>
         <div className='mt-5'>
           <Text tag='h1' className='fs-4' breeSerif>Available Generators</Text>

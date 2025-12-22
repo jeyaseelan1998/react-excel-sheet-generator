@@ -28,7 +28,7 @@ const Header = () => {
     const { pathname } = useLocation();
 
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar navbar-expand-lg bg-body-tertiary shadow-sm fixed-top">
             <Center>
                 <a className="navbar-brand d-flex align-items-center" href="/">
                     <img src={xls_file} alt="Logo" width="30" height="24" className={`d-inline-block align-text-top ${style.navBarLogo}`} />

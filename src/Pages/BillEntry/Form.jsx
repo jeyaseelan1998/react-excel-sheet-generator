@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React from 'react';
+import React, { useState } from 'react';
 import arrayMutators from 'final-form-arrays';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
@@ -9,16 +9,11 @@ import { BiTrash } from "../../components/Icons";
 import { Center, Text } from '../../components';
 import { required } from '../../utils/validate';
 import MetaTag from '../../components/MetaTag';
+import { categoryOptions } from './Helper';
 
 import style from "./style.module.css";
-
-const options = [
-    { value: 'SPARE', label: 'SPARE' },
-    { value: 'ACC', label: 'ACC' },
-    { value: 'IC', label: 'IC' },
-    { value: 'GAS CHARGING', label: 'GAS CHARGING' },
-    { value: 'CONTRACT', label: 'CONTRACT' }
-]
+import Modal from '../../components/Modal';
+import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 
 const ServiceItem = ({ values, name }) => {
     return (
@@ -34,8 +29,8 @@ const ServiceItem = ({ values, name }) => {
                             <label className="form-label">Category</label>
                             <Select
                                 name={input.name}
-                                options={options}
-                                value={options.find(i => i.value === get(values, `${name}.category`))}
+                                options={categoryOptions}
+                                value={categoryOptions.find(i => i.value === get(values, `${name}.category`))}
                                 onChange={obj => input.onChange(obj.value)}
                             />
                             {meta.touched && meta.error && <span className='text-danger'>{meta.error}</span>}
@@ -79,7 +74,7 @@ const Repeater = ({ values, fields }) => {
                             <ServiceItem values={values} name={name} fields={fields} />
                             {
                                 index !== 0 && (
-                                    <button type='button' className={`btn btn-danger ${style.delete}`} onClick={() => fields.remove(index)}>
+                                    <button type='button' className={`btn btn-sm btn-danger ${style.delete}`} onClick={() => fields.remove(index)}>
                                         <BiTrash />
                                     </button>
                                 )
@@ -98,12 +93,12 @@ const BillEntryForm = () => {
 
     const onSubmit = (data) => {
         console.log(data);
-
     }
 
     return (
         <>
             <MetaTag title="Create Bill Entry" />
+            <HeaderSpacer />
             <Center>
                 <Form
                     onSubmit={onSubmit}
@@ -113,7 +108,7 @@ const BillEntryForm = () => {
                     initialValues={{
                         services: [{}]
                     }}
-                    render={({ handleSubmit, values }) => (
+                    render={({ handleSubmit, values, valid }) => (
                         <form onSubmit={handleSubmit} className='row py-5 needs-validation'>
                             <div className="mb-3 col-3">
                                 <label htmlFor="billEntryDate" className="form-label">Date</label>
@@ -156,7 +151,18 @@ const BillEntryForm = () => {
                             </div>
 
                             <div className='col-12 text-center'>
-                                <button type="submit" className='btn btn-info mt-3'>Submit</button>
+                                <div className='mt-3'>
+                                    <Modal
+                                        title='Preview'
+                                        popupDisabled={valid === false}
+                                        triggerLabel='Preview'
+                                        yesLabel={
+                                            <button type="submit" className='btn btn-info'>Submit</button>
+                                        }
+                                    >
+                                        Hi
+                                    </Modal>
+                                </div>
                             </div>
                         </form>
                     )}

@@ -1,7 +1,7 @@
 .delete {
     position: absolute;
     width: fit-content;
-    top: 0%;
-    right: 0;
+    top: 2px;
+    right: 2px;
     font-size: 14px;
 }
