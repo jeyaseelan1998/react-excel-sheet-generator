@@ -1,5 +1,5 @@
-import { get } from 'lodash';
-import React, { useState } from 'react';
+import { get, map } from 'lodash';
+import React from 'react';
 import arrayMutators from 'final-form-arrays';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
@@ -9,18 +9,20 @@ import { BiTrash } from "../../components/Icons";
 import { Center, Text } from '../../components';
 import { required } from '../../utils/validate';
 import MetaTag from '../../components/MetaTag';
-import { categoryOptions } from './Helper';
+import Table from '../../components/Table';
+import Modal from '../../components/Modal';
+import { categoryOptions, COLUMNS } from './Helper';
+import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 
 import style from "./style.module.css";
-import Modal from '../../components/Modal';
-import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
+import { downloadExcel } from '../../utils/excel';
 
 const ServiceItem = ({ values, name }) => {
     return (
         <div className='row'>
             <div className="mb-3 col-6">
                 <label htmlFor={`${name}billEntryDescription`} className="form-label">Description</label>
-                <Field name={`${name}.description`} component="input" required type='text' className="form-control" id={`${name}billEntryDescription`} />
+                <Field name={`${name}.description`} component="input" type='text' className="form-control" id={`${name}billEntryDescription`} />
             </div>
             <div className="mb-3 col-6">
                 <Field name={`${name}.category`} validate={required}>
@@ -40,13 +42,13 @@ const ServiceItem = ({ values, name }) => {
             </div>
             <div className="mb-3 col-6">
                 <label htmlFor={`${name}billEntryQty`} className="form-label">QTY</label>
-                <Field name={`${name}.qdt`} component="input" required type='number' className="form-control" id={`${name}billEntryQty`} />
+                <Field name={`${name}.qty`} component="input" type='number' className="form-control" id={`${name}billEntryQty`} />
             </div>
             {
                 get(values, `${name}.category`) !== 'CONTRACT' && (
                     <div className="mb-3 col-6">
                         <label htmlFor={`${name}billEntryAmount`} className="form-label">Amount</label>
-                        <Field name={`${name}.amount`} component="input" required type='text' className="form-control" id={`${name}billEntryAmount`} />
+                        <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} />
                     </div>
                 )
             }
@@ -54,7 +56,7 @@ const ServiceItem = ({ values, name }) => {
                 get(values, `${name}.category`) === 'CONTRACT' && (
                     <div className="mb-3 col-6">
                         <label htmlFor={`billEntryAmc`} className="form-label">AMC</label>
-                        <Field name={`${name}.amc`} component="input" required type='text' className="form-control" id={`billEntryAmc`} />
+                        <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} />
                     </div>
                 )
             }
@@ -92,7 +94,9 @@ const Repeater = ({ values, fields }) => {
 const BillEntryForm = () => {
 
     const onSubmit = (data) => {
-        console.log(data);
+        const { services, ...rest } = data;
+        const rows = map(services, (service) => ({ ...service, ...rest }));
+        downloadExcel({ columns: COLUMNS, rows });
     }
 
     return (
@@ -108,64 +112,79 @@ const BillEntryForm = () => {
                     initialValues={{
                         services: [{}]
                     }}
-                    render={({ handleSubmit, values, valid }) => (
-                        <form onSubmit={handleSubmit} className='row py-5 needs-validation'>
-                            <div className="mb-3 col-3">
-                                <label htmlFor="billEntryDate" className="form-label">Date</label>
-                                <Field name="date" component="input" required type='date' className="form-control" id="billEntryDate" />
-                            </div>
-                            <div className="mb-3 col-6">
-                                <label htmlFor="billEntryEngineerName" className="form-label">Engineer Name</label>
-                                <Field name="engineer_name" component="input" required type='text' className="form-control" id="billEntryEngineerName" />
-                            </div>
-                            <div className="mb-3 col-3">
-                                <label htmlFor="billEntryBillNo" className="form-label">Bill No.</label>
-                                <Field name="bill_no" component="input" required type='text' className="form-control" id="billEntryBillNo" />
-                            </div>
+                    render={({ handleSubmit, values, valid }) => {
 
-                            <div className='mb-3 pt-3 border border-success rounded'>
-                                <FieldArray name="services" >
-                                    {
-                                        ({ fields }) => (
-                                            <Repeater values={values} fields={fields} />
-                                        )
-                                    }
-                                </FieldArray>
-                            </div>
+                        const { services, ...rest } = values;
 
-                            <div className="mb-3 col-6">
-                                <label htmlFor="billEntryCustomerName" className="form-label">Customer Name</label>
-                                <Field name="customer_name" component="input" required type='text' className="form-control" id="billEntryCustomerName" />
-                            </div>
-                            <div className="mb-3 col-6">
-                                <label htmlFor="billEntryPhoneNumber" className="form-label">Phone Number</label>
-                                <Field name="phone_number" component="input" required type='text' className="form-control" id="billEntryPhoneNumber" />
-                            </div>
-                            <div className="mb-3 col-12">
-                                <label htmlFor="billEntryCallType" className="form-label">Call Type</label>
-                                <Field name="call_type" component="input" required type='text' className="form-control" id="billEntryCallType" />
-                            </div>
-                            <div className="mb-3 col-12">
-                                <label htmlFor="billEntryNotes" className="form-label">Notes</label>
-                                <Field name="notes" component="textarea" className="form-control" id="billEntryNotes" />
-                            </div>
+                        const rows = map(services, (service) => ({ ...service, ...rest }));
 
-                            <div className='col-12 text-center'>
-                                <div className='mt-3'>
-                                    <Modal
-                                        title='Preview'
-                                        popupDisabled={valid === false}
-                                        triggerLabel='Preview'
-                                        yesLabel={
-                                            <button type="submit" className='btn btn-info'>Submit</button>
-                                        }
-                                    >
-                                        Hi
-                                    </Modal>
+                        return (
+                            <form onSubmit={handleSubmit} className='row py-5 needs-validation'>
+                                <div className="mb-3 col-3">
+                                    <label htmlFor="billEntryDate" className="form-label">Date</label>
+                                    <Field name="date" component="input" type='date' className="form-control" id="billEntryDate" />
                                 </div>
-                            </div>
-                        </form>
-                    )}
+                                <div className="mb-3 col-6">
+                                    <label htmlFor="billEntryEngineerName" className="form-label">Engineer Name</label>
+                                    <Field name="engineer_name" component="input" type='text' className="form-control" id="billEntryEngineerName" />
+                                </div>
+                                <div className="mb-3 col-3">
+                                    <label htmlFor="billEntryBillNo" className="form-label">Bill No.</label>
+                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" />
+                                </div>
+
+                                <div className='mb-3 pt-3 border border-success rounded'>
+                                    <FieldArray name="services" >
+                                        {
+                                            ({ fields }) => (
+                                                <Repeater values={values} fields={fields} />
+                                            )
+                                        }
+                                    </FieldArray>
+                                </div>
+
+                                <div className="mb-3 col-6">
+                                    <label htmlFor="billEntryCustomerName" className="form-label">Customer Name</label>
+                                    <Field name="customer_name" component="input" type='text' className="form-control" id="billEntryCustomerName" />
+                                </div>
+                                <div className="mb-3 col-6">
+                                    <label htmlFor="billEntryPhoneNumber" className="form-label">Phone Number</label>
+                                    <Field name="phone_number" component="input" type='text' className="form-control" id="billEntryPhoneNumber" />
+                                </div>
+                                <div className="mb-3 col-12">
+                                    <label htmlFor="billEntryCallType" className="form-label">Call Type</label>
+                                    <Field name="call_type" component="input" type='text' className="form-control" id="billEntryCallType" />
+                                </div>
+                                <div className="mb-3 col-12">
+                                    <label htmlFor="billEntryNotes" className="form-label">Notes</label>
+                                    <Field name="notes" component="textarea" className="form-control" id="billEntryNotes" />
+                                </div>
+
+                                <div className='col-12 text-center'>
+                                    <div className='mt-3'>
+                                        <Modal
+                                            title='Preview'
+                                            popupDisabled={valid === false}
+                                            triggerLabel='Preview'
+                                            yesLabel={
+                                                <button type="submit" className='btn btn-info'>Submit</button>
+                                            }
+                                            size="xl"
+                                        >
+                                            {
+                                                valid === true && (
+                                                    <Table
+                                                        rows={rows}
+                                                        columns={COLUMNS}
+                                                    />
+                                                )
+                                            }
+                                        </Modal>
+                                    </div>
+                                </div>
+                            </form>
+                        )
+                    }}
                 />
             </Center>
         </>

@@ -9,15 +9,12 @@ function getTimestamp() {
         `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
 }
 
-export async function downloadExcel() {
+export async function downloadExcel({ columns = [], rows = [] }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Report");
 
     // TODO: make it dynamic
-    worksheet.columns = [
-        { header: "Product", key: "product", width: 30 },
-        { header: "Price", key: "price", width: 15 }
-    ];
+    worksheet.columns = columns;
 
     // Header style
     const headerRow = worksheet.getRow(1);
@@ -31,10 +28,10 @@ export async function downloadExcel() {
         };
     });
 
-    // TODO: make it dynamic
-    worksheet.addRow({ product: "Laptop", price: 50000 });
-    worksheet.addRow({ product: "Phone", price: 20000 });
-
+    rows.forEach(row => {
+        worksheet.addRow(row)
+    })
+    
     const buffer = await workbook.xlsx.writeBuffer();
 
     const blob = new Blob([buffer], {

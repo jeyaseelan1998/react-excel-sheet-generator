@@ -9,13 +9,14 @@ const Modal = ({
     noLabel = "Close",
     onClose = () => { },
     id = "staticBackdrop",  // Must be Unique
+    size = 'sm'
 }) => {
     return (
         <>
             <button type="button" className="btn btn-info" data-bs-toggle="modal" data-bs-target={`#${id}`} disabled={popupDisabled}>
                 {triggerLabel}
             </button>
-            <div className="modal fade" tabIndex="-1" id={id} aria-hidden="true">
+            <div className={`modal modal-${size}  fade`} tabIndex="-1" id={id} aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
