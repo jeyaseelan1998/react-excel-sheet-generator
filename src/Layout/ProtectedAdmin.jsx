@@ -1,23 +1,39 @@
-import React, { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
-import { getCookie } from '../utils/storage';
+import { deleteCookie, getCookie } from '../utils/storage';
 import Header from './Header';
+import { toast } from 'react-toastify';
+import { get } from 'lodash';
+import api from '../api/v1';
 
 const ProtectedAdmin = () => {
 
-  const navigate = useNavigate();
+  const [user, setUser] = useState({});
+
+  const getProfile = async () => {
+    try {
+      const response = await api.post("/profile", {
+        token: getCookie('token')
+      });
+      setUser(get(response, "data.data"));
+    } catch (error) {
+      deleteCookie();
+      toast.error(get(error, "response.data.message") || error.message);
+      setTimeout(() => {
+        window.location.href = '/guest/login';
+      }, 5000)
+    }
+  }
 
   useEffect(() => {
-    if (!getCookie()) {
-      navigate('/guest/login', { replace: true });
-    }
+    getProfile();
   }, [])
 
   return (
     <>
       <Header />
-      <Outlet />
+      <Outlet context={{ user }} />
     </>
   )
 }

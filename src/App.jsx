@@ -1,6 +1,7 @@
-import React, { lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
+import { Spinner } from './components';
 
 const Guest = lazy(() => import('./Layout/Guest'));
 const Protected = lazy(() => import('./Layout/Protected'));
@@ -14,22 +15,30 @@ const BillEntryForm = lazy(() => import('./Pages/BillEntry/Form'));
 
 const Admin = lazy(() => import('./Pages/Admin'));
 
+const SuspendPage = (element) => {
+  return (
+    <Suspense fallback={<div className='suspense-page-loading'><Spinner /></div>}>
+      {element}
+    </Suspense>
+  )
+}
+
 const App = () => {
   return (
     <>
       <Routes>
-        <Route path='/guest' element={<Guest />}>
-          <Route path='login' element={<Login />} />
+        <Route path='/guest' element={SuspendPage(<Guest />)}>
+          <Route path='login' element={SuspendPage(<Login />)} />
         </Route>
-        <Route path='/' element={<Protected />}>
-          <Route index element={<Home />} />
-          <Route path='bill-entry/create' element={<BillEntryForm />} />
-          <Route path='history' element={<History />} />
+        <Route path='/' element={SuspendPage(<Protected />)}>
+          <Route index element={SuspendPage(<Home />)} />
+          <Route path='bill-entry/create' element={SuspendPage(<BillEntryForm />)} />
+          <Route path='history' element={SuspendPage(<History />)} />
         </Route>
-        <Route path='/admin' element={<ProtectedAdmin />}>
-          <Route index element={<Admin />} />
+        <Route path='/admin' element={SuspendPage(<ProtectedAdmin />)}>
+          <Route index element={SuspendPage(<Admin />)} />
         </Route>
-        <Route path='*' element={<NotFound />} />
+        <Route path='*' element={SuspendPage(<NotFound />)} />
       </Routes>
       <ToastContainer
         position="top-right"

@@ -15,3 +15,9 @@ img {
     height: auto;
     width: 100%;
 }
+
+.suspense-page-loading {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+}

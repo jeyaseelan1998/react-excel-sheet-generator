@@ -60,14 +60,14 @@ const Login = () => {
                     <div className='text-center pt-3'>
                       {
                         !fetching && (
-                          <button type='submit' className="btn btn-primary text-uppercase w-25" disabled={!valid}>
+                          <button type='submit' className="btn btn-primary text-uppercase w-50" disabled={!valid}>
                             Submit
                           </button>
                         )
                       }
                       {
                         fetching && (
-                          <div className="btn btn-primary opacity-50 text-uppercase w-25 m-auto d-flex justify-content-center">
+                          <div className="btn btn-primary opacity-50 text-uppercase w-50 m-auto d-flex justify-content-center">
                             <Spinner />
                           </div>
                         )

@@ -10,7 +10,7 @@ import { Center, Text } from '../../components';
 import { required } from '../../utils/validate';
 import MetaTag from '../../components/MetaTag';
 import Table from '../../components/Table';
-import Modal from '../../components/Modal';
+import BSModal from '../../components/BSModal';
 import { categoryOptions, COLUMNS } from './Helper';
 import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 
@@ -162,7 +162,7 @@ const BillEntryForm = () => {
 
                                 <div className='col-12 text-center'>
                                     <div className='mt-3'>
-                                        <Modal
+                                        <BSModal
                                             title='Preview'
                                             popupDisabled={valid === false}
                                             triggerLabel='Preview'
@@ -179,7 +179,7 @@ const BillEntryForm = () => {
                                                     />
                                                 )
                                             }
-                                        </Modal>
+                                        </BSModal>
                                     </div>
                                 </div>
                             </form>
