@@ -4,8 +4,9 @@ import { Outlet } from 'react-router-dom';
 import { deleteCookie, getCookie } from '../utils/storage';
 import Header from './Header';
 import { toast } from 'react-toastify';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import api from '../api/v1';
+import { Spinner } from '../components';
 
 const Protected = () => {
 
@@ -33,7 +34,18 @@ const Protected = () => {
   return (
     <>
       <Header />
-      <Outlet context={{ user }} />
+      {
+        isEmpty(user) && (
+          <div className='profile-loading'>
+            <Spinner />
+          </div>
+        )
+      }
+      {
+        !isEmpty(user) && (
+          <Outlet context={{ user }} />
+        )
+      }
     </>
   )
 }

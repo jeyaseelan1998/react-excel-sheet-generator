@@ -16,8 +16,6 @@ const Table = ({ rows = [], columns = [] }) => {
             <tbody>
                 {
                     map(rows, (row, index) => {
-                        console.log(row);
-                        
                         return (
                             <tr key={index}>
                                 {

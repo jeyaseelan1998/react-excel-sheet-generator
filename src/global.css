@@ -16,8 +16,9 @@ img {
     width: 100%;
 }
 
+.profile-loading,
 .suspense-page-loading {
-    min-height: 100dvh;
+    min-height: calc(100dvh - 71px);
     display: grid;
     place-items: center;
 }
