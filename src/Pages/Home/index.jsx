@@ -11,7 +11,7 @@ const types = [
   {
     id: "100",
     label: "BILL ENTRY",
-    url: '/bill-entry/create'
+    url: '/bill-entry'
   }
 ]
 

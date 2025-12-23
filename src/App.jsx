@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
+
 import { Spinner } from './components';
 
 const Guest = lazy(() => import('./Layout/Guest'));
@@ -11,6 +12,7 @@ const NotFound = lazy(() => import('./Layout/NotFound'));
 const Login = lazy(() => import('./Pages/Login'));
 const Home = lazy(() => import('./Pages/Home'));
 const History = lazy(() => import('./Pages/History'));
+const BillEntry = lazy(() => import('./Pages/BillEntry'));
 const BillEntryForm = lazy(() => import('./Pages/BillEntry/Form'));
 
 const Admin = lazy(() => import('./Pages/Admin'));
@@ -33,6 +35,7 @@ const App = () => {
         <Route path='/' element={SuspendPage(<Protected />)}>
           <Route index element={SuspendPage(<Home />)} />
           <Route path='bill-entry/create' element={SuspendPage(<BillEntryForm />)} />
+          <Route path='bill-entry' element={SuspendPage(<BillEntry />)} />
           <Route path='history' element={SuspendPage(<History />)} />
         </Route>
         <Route path='/admin' element={SuspendPage(<ProtectedAdmin />)}>
