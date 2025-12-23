@@ -10,6 +10,10 @@
     margin: auto;
 }
 
+.loginWrapper button {
+    min-width: fit-content;
+}
+
 .image {
     width: 150px;
     min-height: 150px;
