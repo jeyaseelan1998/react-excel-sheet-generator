@@ -1,18 +1,33 @@
-import React from 'react';
+import { get } from 'lodash';
+import { toast } from 'react-toastify';
+import React, { useState } from 'react';
 import { Center, Text } from '../../components';
 import { login_img } from '../../components/Images';
 
-import style from './style.module.css';
+import api from '../../api/v1';
 import MetaTag from '../../components/MetaTag';
 import { Field, Form } from 'react-final-form';
 import { required } from '../../utils/validate';
-import api from '../../api/v1';
+import { setCookie } from '../../utils/storage';
+
+import style from './style.module.css';
 
 const Login = () => {
+  const [fetching, setFetching] = useState(false);
 
   const onSubmit = async (data) => {
-    await api.post("/login", data);
-    window.location.href = '/';
+    setFetching(true);
+    try {
+      const response = await api.post("/login", data);
+      const token = get(response, 'data.token');
+      if (token) {
+        setCookie(token, 'token');
+        window.location.href = '/';
+      }
+    } catch (error) {
+      toast.error(get(error, 'response.data.message') || error.message);
+    }
+    setFetching(false);
   }
 
   return (
@@ -20,10 +35,6 @@ const Login = () => {
       <MetaTag title="Login" />
       <Center>
         <Form
-          initialValues={{
-            email: "test@test.com",
-            password: "Test2025"
-          }}
           onSubmit={onSubmit}
           render={({ handleSubmit, valid }) => {
             return (
@@ -47,7 +58,7 @@ const Login = () => {
                     </div>
 
                     <div className='text-center'>
-                      <button type='submit' className="btn btn-primary text-uppercase" disabled={!valid}>Submit</button>
+                      <button type='submit' className="btn btn-primary text-uppercase w-25" disabled={!valid || fetching}>Submit</button>
                     </div>
                   </div>
                 </div>
