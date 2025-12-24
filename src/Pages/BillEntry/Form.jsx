@@ -133,26 +133,7 @@ const BillEntryForm = () => {
                         ...arrayMutators
                     }}
                     initialValues={{
-                        "services": [
-                            {
-                                "description": "Test 1",
-                                "category": "CONTRACT",
-                                "qty": "1",
-                                "amc": "123"
-                            },
-                            {
-                                "description": "test 2",
-                                "category": "SPARE",
-                                "qty": "2",
-                                "amount": "500"
-                            }
-                        ],
-                        "engineer_name": "Jeyaseelan",
-                        "bill_no": "1526",
-                        "customer_name": "Kavi",
-                        "phone_number": "9392839283",
-                        "call_type": "Arun sir",
-                        "notes": "Test",
+                        "services": [{}],
                         "date": new Date().toISOString()
                     }}
                     render={({ handleSubmit, values, valid, form }) => {
