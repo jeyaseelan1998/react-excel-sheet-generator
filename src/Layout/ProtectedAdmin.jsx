@@ -53,7 +53,7 @@ const ProtectedAdmin = () => {
       <Header />
       <HeaderSpacer />
       {
-        isEmpty(user) && (
+        isEmpty(user) && !error && (
           <div className='profile-loading'>
             <Spinner />
           </div>
