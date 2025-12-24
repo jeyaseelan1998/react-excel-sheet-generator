@@ -8,7 +8,7 @@ const Admin = () => {
     <>
       <MetaTag title="Admin" />
       <Center>
-        Admin
+        
       </Center>
     </>
   )

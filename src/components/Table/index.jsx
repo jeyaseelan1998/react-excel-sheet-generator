@@ -4,79 +4,91 @@ import { dateFormat } from './format';
 
 import { FaRegEdit, BiTrash } from "../Icons";
 import { Link } from 'react-router-dom';
+import Text from '../Text';
 
 const Table = ({ rows = [], columns = [], actions }) => {
     return (
-        <table className="table table-striped">
-            <thead>
-                <tr className='table-dark text-nowrap'>
-                    {
-                        map(columns, (col) => (
-                            <th key={col.key} scope="col">{col.header}</th>
-                        ))
-                    }
-                    {
-                        actions && (
-                            <th scope="col">ACTIONS</th>
-                        )
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    map(rows, (row, index) => {
-                        return (
-                            <tr key={index}>
+        <>
+            {
+                rows && rows.length === 0 && (
+                    <Text className="h5 pt-3">No records found</Text>
+                )
+            }
+            {
+                rows && rows.length > 0 && (
+                    <table className="table table-striped">
+                        <thead>
+                            <tr className='table-dark text-nowrap'>
                                 {
-                                    map(columns, (col, idx) => {
-                                        const key = get(col, 'key');
-                                        const def = get(col, 'default');
-                                        const type = get(col, 'type');
-                                        let value = get(row, key, def);
-
-                                        if (type === "date") {
-                                            value = dateFormat(value);
-                                        }
-                                        if (type === "length") {
-                                            value = (value || []).length;
-                                        }
-
-                                        return (
-                                            <td key={idx} className='text-nowrap'>{value}</td>
-                                        )
-                                    })
+                                    map(columns, (col) => (
+                                        <th key={col.key} scope="col">{col.header}</th>
+                                    ))
                                 }
-
-                                <td className='position-relative'>
-                                    {
-                                        actions && actions.map((ac, idx) => {
-                                            return (
-                                                <Fragment key={idx}>
-                                                    {
-                                                        get(ac, "type") === "edit" && (
-                                                            <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
-                                                                <FaRegEdit />
-                                                            </Link>
-                                                        )
-                                                    }
-                                                    {
-                                                        get(ac, "type") === "trash" && (
-                                                            <button className='btn btn-sm' onClick={ac.onClickF}>
-                                                                <BiTrash />
-                                                            </button>
-                                                        )
-                                                    }
-                                                </Fragment>
-                                            )
-                                        })
-                                    }
-                                </td>
+                                {
+                                    actions && (
+                                        <th scope="col">ACTIONS</th>
+                                    )
+                                }
                             </tr>
-                        )
-                    })
-                }
-            </tbody>
-        </table>
+                        </thead>
+                        <tbody>
+                            {
+                                map(rows, (row, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            {
+                                                map(columns, (col, idx) => {
+                                                    const key = get(col, 'key');
+                                                    const def = get(col, 'default');
+                                                    const type = get(col, 'type');
+                                                    let value = get(row, key, def);
+
+                                                    if (type === "date") {
+                                                        value = dateFormat(value);
+                                                    }
+                                                    if (type === "length") {
+                                                        value = (value || []).length;
+                                                    }
+
+                                                    return (
+                                                        <td key={idx} className='text-nowrap'>{value}</td>
+                                                    )
+                                                })
+                                            }
+
+                                            <td className='position-relative'>
+                                                {
+                                                    actions && actions.map((ac, idx) => {
+                                                        return (
+                                                            <Fragment key={idx}>
+                                                                {
+                                                                    get(ac, "type") === "edit" && (
+                                                                        <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
+                                                                            <FaRegEdit />
+                                                                        </Link>
+                                                                    )
+                                                                }
+                                                                {
+                                                                    get(ac, "type") === "trash" && (
+                                                                        <button className='btn btn-sm' onClick={ac.onClickF}>
+                                                                            <BiTrash />
+                                                                        </button>
+                                                                    )
+                                                                }
+                                                            </Fragment>
+                                                        )
+                                                    })
+                                                }
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </tbody>
+                    </table>
+                )
+            }
+        </>
     )
 }
 

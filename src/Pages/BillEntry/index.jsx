@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MetaTag from '../../components/MetaTag';
 import { Center } from '../../components';
-import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 import api from '../../api/v1';
 import { toast } from 'react-toastify';
 import { get, map, flattenDepth } from 'lodash';
@@ -43,7 +42,6 @@ const BillEntryList = () => {
     return (
         <>
             <MetaTag title="" />
-            <HeaderSpacer />
             <Center>
                 <div className='py-5 mt-2 text-center position-relative'>
                     <button onClick={exportExsx} className='btn btn-success position-absolute top-0 right-5 d-flex align-items-center'>

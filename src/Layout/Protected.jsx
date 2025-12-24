@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { get, isEmpty } from 'lodash';
 import api from '../api/v1';
 import { Spinner } from '../components';
+import HeaderSpacer from './Header/HeaderSpacer';
 
 const Protected = () => {
 
@@ -40,6 +41,7 @@ const Protected = () => {
   return (
     <>
       <Header />
+      <HeaderSpacer />
       {
         isEmpty(user) && (
           <div className='profile-loading'>

@@ -6,11 +6,14 @@ import Header from './Header';
 import { toast } from 'react-toastify';
 import { get, isEmpty } from 'lodash';
 import api from '../api/v1';
-import { Spinner } from '../components';
+import { Center, Spinner, Text } from '../components';
+import HeaderSpacer from './Header/HeaderSpacer';
+import { BiErrorAlt } from "../components/Icons.js";
 
 const ProtectedAdmin = () => {
 
   const [user, setUser] = useState({});
+  const [error, setError] = useState(false);
 
   const getProfile = async () => {
     const token = getCookie('token');
@@ -21,7 +24,15 @@ const ProtectedAdmin = () => {
       const response = await api.post("/profile", {
         token
       });
-      setUser(get(response, "data.data"));
+      console.log(response);
+
+      if (import.meta.env.VITE_APP_SUPER_ADMIN !== get(response, "data.data.role")) {
+        setError("You do not have permission to access this page");
+      } else {
+        setUser(get(response, "data.data"));
+        setError(false);
+      }
+
     } catch (error) {
       toast.error(get(error, "response.data.message") || error.message);
       if (get(error, "response.status") >= 400 && get(error, "response.status") <= 499) {
@@ -40,6 +51,7 @@ const ProtectedAdmin = () => {
   return (
     <>
       <Header />
+      <HeaderSpacer />
       {
         isEmpty(user) && (
           <div className='profile-loading'>
@@ -48,7 +60,17 @@ const ProtectedAdmin = () => {
         )
       }
       {
-        !isEmpty(user) && (
+        error && (
+          <Center>
+            <div className='text-center fs-5 pt-5'>
+              <BiErrorAlt size={52} />
+              <Text className="h3 text-center pt-2">{error}</Text>
+            </div>
+          </Center>
+        )
+      }
+      {
+        !isEmpty(user) && !error && (
           <Outlet context={{ user }} />
         )
       }

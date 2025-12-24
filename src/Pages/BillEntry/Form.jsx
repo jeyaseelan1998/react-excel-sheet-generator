@@ -14,7 +14,6 @@ import MetaTag from '../../components/MetaTag';
 import Table from '../../components/Table';
 import BSModal from '../../components/BSModal';
 import { categoryOptions, COLUMNS } from './Helper';
-import HeaderSpacer from '../../Layout/Header/HeaderSpacer';
 import DatePickerField from '../../components/Fields/DatePicker';
 
 import style from "./style.module.css";
@@ -125,7 +124,6 @@ const BillEntryForm = () => {
     return (
         <>
             <MetaTag title="Create Bill Entry" />
-            <HeaderSpacer />
             <Center>
                 <Form
                     onSubmit={onSubmit}

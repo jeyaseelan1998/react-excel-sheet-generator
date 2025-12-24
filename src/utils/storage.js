@@ -6,7 +6,7 @@ export const getCookie = (key = 'token') => cookies.get(key);
 
 export const deleteCookie = (key = 'token') => cookies.remove(key);
 
-export const setCookie = (value, key = 'token', options) => cookies.set(key, value, options);
+export const setCookie = (value, key = 'token', options = { expires: 60 * 60 * 24 * 7 /* 7 Days */ }) => cookies.set(key, value, options);
 // OPTIONS arg
 // {
 //     path?: string;
