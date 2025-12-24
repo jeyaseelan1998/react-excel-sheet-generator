@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { get, map } from 'lodash';
 import { dateFormat } from './format';
 
@@ -51,22 +51,22 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                     {
                                         actions && actions.map((ac, idx) => {
                                             return (
-                                                <>
+                                                <Fragment key={idx}>
                                                     {
                                                         get(ac, "type") === "edit" && (
-                                                            <Link key={idx} className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
+                                                            <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
                                                                 <FaRegEdit />
                                                             </Link>
                                                         )
                                                     }
                                                     {
                                                         get(ac, "type") === "trash" && (
-                                                            <button key={idx} className='btn btn-sm' onClick={ac.onClickF}>
+                                                            <button className='btn btn-sm' onClick={ac.onClickF}>
                                                                 <BiTrash />
                                                             </button>
                                                         )
                                                     }
-                                                </>
+                                                </Fragment>
                                             )
                                         })
                                     }

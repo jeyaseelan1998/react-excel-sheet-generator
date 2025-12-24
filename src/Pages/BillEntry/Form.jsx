@@ -1,9 +1,11 @@
 import { get, map } from 'lodash';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import arrayMutators from 'final-form-arrays';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { BiTrash } from "../../components/Icons";
 import { Center, Spinner, Text } from '../../components';
@@ -17,17 +19,25 @@ import DatePickerField from '../../components/Fields/DatePicker';
 
 import style from "./style.module.css";
 import api from '../../api/v1';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
-const ServiceItem = ({ values, name }) => {
+const ServiceItem = ({ values, name, form }) => {
+    const category = get(values, `${name}.category`);
+    
+    useEffect(() => {
+        if (category === 'CONTRACT') {
+            form.change(`${name}.amount`, '');
+        } else {
+            form.change(`${name}.amc`, '');
+        }
+    }, [category])
+
     return (
         <div className='row'>
-            <div className="mb-3 col-md-6">
+            <div className="mb-3">
                 <label htmlFor={`${name}billEntryDescription`} className="form-label">Description</label>
                 <Field name={`${name}.description`} component="input" type='text' className="form-control" id={`${name}billEntryDescription`} />
             </div>
-            <div className="mb-3 col-md-6">
+            <div className="mb-3">
                 <Field name={`${name}.category`} validate={required}>
                     {({ input, meta }) => (
                         <>
@@ -43,21 +53,21 @@ const ServiceItem = ({ values, name }) => {
                     )}
                 </Field>
             </div>
-            <div className="mb-3 col-md-6">
+            <div className="mb-3">
                 <label htmlFor={`${name}billEntryQty`} className="form-label">QTY</label>
                 <Field name={`${name}.qty`} component="input" type='number' className="form-control" id={`${name}billEntryQty`} />
             </div>
             {
-                get(values, `${name}.category`) !== 'CONTRACT' && (
-                    <div className="mb-3 col-md-6">
+                category !== 'CONTRACT' && (
+                    <div className="mb-3">
                         <label htmlFor={`${name}billEntryAmount`} className="form-label">Amount <span className='small align-middle'>(in rupees)</span></label>
                         <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} />
                     </div>
                 )
             }
             {
-                get(values, `${name}.category`) === 'CONTRACT' && (
-                    <div className="mb-3 col-md-6">
+                category === 'CONTRACT' && (
+                    <div className="mb-3">
                         <label htmlFor={`billEntryAmc`} className="form-label">AMC <span className='small align-middle'>(in rupees)</span></label>
                         <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} />
                     </div>
@@ -67,16 +77,15 @@ const ServiceItem = ({ values, name }) => {
     )
 }
 
-const Repeater = ({ values, fields }) => {
+const Repeater = ({ values, fields, form }) => {
     return (
-
         <div className='mb-3'>
             <Text className='fw-bold'>Service List</Text>
             {
                 fields.map((name, index) => {
                     return (
                         <div key={index} className='p-3 border border-2 my-3 rounded position-relative'>
-                            <ServiceItem values={values} name={name} fields={fields} />
+                            <ServiceItem values={values} name={name} form={form} />
                             {
                                 index !== 0 && (
                                     <button type='button' className={`btn btn-sm btn-danger ${style.delete}`} onClick={() => fields.remove(index)}>
@@ -90,7 +99,6 @@ const Repeater = ({ values, fields }) => {
             }
             <button type='button' className='btn btn-warning' onClick={() => fields.push({})}>Add more</button>
         </div>
-
     )
 }
 
@@ -147,10 +155,8 @@ const BillEntryForm = () => {
                         "notes": "Test",
                         "date": new Date().toISOString()
                     }}
-                    render={({ handleSubmit, values, valid }) => {
-
+                    render={({ handleSubmit, values, valid, form }) => {
                         const { services, ...rest } = values;
-
                         const rows = map(services, (service) => ({ ...service, ...rest }));
 
                         return (
@@ -159,11 +165,11 @@ const BillEntryForm = () => {
                                     <Text className="d-inline pe-3 m-0 fw-bold">Bill Entry Date</Text>
                                     <Field name="date" component={DatePickerField} className="form-control" />
                                 </div>
-                                <div className="mb-3 col-md-7">
+                                <div className="mb-3">
                                     <label htmlFor="billEntryEngineerName" className="form-label">Engineer Name</label>
                                     <Field name="engineer_name" component="input" type='text' className="form-control" id="billEntryEngineerName" />
                                 </div>
-                                <div className="mb-3 col-md-5">
+                                <div className="mb-3">
                                     <label htmlFor="billEntryBillNo" className="form-label">Bill No.</label>
                                     <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" />
                                 </div>
@@ -171,16 +177,16 @@ const BillEntryForm = () => {
                                     <FieldArray name="services" >
                                         {
                                             ({ fields }) => (
-                                                <Repeater values={values} fields={fields} />
+                                                <Repeater values={values} fields={fields} form={form} />
                                             )
                                         }
                                     </FieldArray>
                                 </div>
-                                <div className="mb-3 col-md-6">
+                                <div className="mb-3">
                                     <label htmlFor="billEntryCustomerName" className="form-label">Customer Name</label>
                                     <Field name="customer_name" component="input" type='text' className="form-control" id="billEntryCustomerName" />
                                 </div>
-                                <div className="mb-3 col-md-6">
+                                <div className="mb-3">
                                     <label htmlFor="billEntryPhoneNumber" className="form-label">Phone Number</label>
                                     <Field name="phone_number" component="input" type='text' className="form-control" id="billEntryPhoneNumber" />
                                 </div>
@@ -202,7 +208,7 @@ const BillEntryForm = () => {
                                                 <>
                                                     {
                                                         !fetching && (
-                                                            <button type='submit' className="btn btn-info w-25" disabled={!valid}>
+                                                            <button type='button' className="btn btn-info w-25" disabled={!valid} onClick={handleSubmit}>
                                                                 Submit
                                                             </button>
                                                         )

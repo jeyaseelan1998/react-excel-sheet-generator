@@ -13,17 +13,23 @@ const Protected = () => {
   const [user, setUser] = useState({});
 
   const getProfile = async () => {
+    const token = getCookie('token');
+    if (!token) {
+      window.location.href = '/guest/login';
+    }
     try {
       const response = await api.post("/profile", {
-        token: getCookie('token')
+        token
       });
       setUser(get(response, "data.data"));
     } catch (error) {
-      deleteCookie();
       toast.error(get(error, "response.data.message") || error.message);
-      setTimeout(() => {
-        window.location.href = '/guest/login';
-      }, 5000)
+      if (get(error, "response.status") >= 400 && get(error, "response.status") <= 499) {
+        deleteCookie();
+        setTimeout(() => {
+          window.location.href = '/guest/login';
+        }, 5000)
+      }
     }
   }
 

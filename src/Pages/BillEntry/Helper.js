@@ -21,7 +21,7 @@ export const COLUMNS = [
     { header: "NOTES", key: "notes", width: 45 },
 ];
 
-export const LIST_COLUMNS = [
+export const PREVIEW_LIST_COLUMNS = [
     { header: "Date", key: "date", width: 30, type: "date" },
     { header: "ENGINEER NAME", key: "engineer_name", width: 45 },
     { header: "BILL NO", key: "bill_no", width: 15 },

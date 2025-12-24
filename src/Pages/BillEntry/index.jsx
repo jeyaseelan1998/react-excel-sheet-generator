@@ -6,7 +6,7 @@ import api from '../../api/v1';
 import { toast } from 'react-toastify';
 import { get, map, flattenDepth } from 'lodash';
 import Table from '../../components/Table';
-import { COLUMNS, LIST_COLUMNS } from './Helper';
+import { COLUMNS, PREVIEW_LIST_COLUMNS } from './Helper';
 import { RiMenuAddFill, RiFileExcel2Line } from "../../components/Icons";
 import { Link } from 'react-router-dom';
 import { downloadExcel } from '../../utils/excel';
@@ -16,7 +16,7 @@ const BillEntryList = () => {
 
     const getList = async () => {
         try {
-            const response = await api.get("/bill-entry")
+            const response = await api.get("/bill-entry?order=date_desc")
             setList(get(response, "data.list"));
         } catch (error) {
             toast.error(get(error, "message"));
@@ -56,7 +56,7 @@ const BillEntryList = () => {
                     </Link>
                     <div className='overflow-auto'>
                         <Table
-                            columns={LIST_COLUMNS}
+                            columns={PREVIEW_LIST_COLUMNS}
                             rows={list}
                             export
                             create
