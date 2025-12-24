@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { get, map } from 'lodash';
 import { dateFormat } from './format';
 
-import { FaRegEdit, BiTrash } from "../Icons";
+import { FaRegEdit, BiTrash, FaEye } from "../Icons";
 import { Link } from 'react-router-dom';
 import Text from '../Text';
 
@@ -56,30 +56,41 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                                 })
                                             }
 
-                                            <td className='position-relative'>
-                                                {
-                                                    actions && actions.map((ac, idx) => {
-                                                        return (
-                                                            <Fragment key={idx}>
-                                                                {
-                                                                    get(ac, "type") === "edit" && (
-                                                                        <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
-                                                                            <FaRegEdit />
-                                                                        </Link>
-                                                                    )
-                                                                }
-                                                                {
-                                                                    get(ac, "type") === "trash" && (
-                                                                        <button className='btn btn-sm' onClick={ac.onClickF}>
-                                                                            <BiTrash />
-                                                                        </button>
-                                                                    )
-                                                                }
-                                                            </Fragment>
-                                                        )
-                                                    })
-                                                }
-                                            </td>
+                                            {
+                                                actions && (
+                                                <td className='position-relative'>
+                                                    {
+                                                        actions.map((ac, idx) => {
+                                                            return (
+                                                                <Fragment key={idx}>
+                                                                    {
+                                                                        get(ac, "type") === "view" && (
+                                                                            <button className='btn btn-sm' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
+                                                                                <FaEye />
+                                                                            </button>
+                                                                        )
+                                                                    }
+                                                                    {
+                                                                        get(ac, "type") === "edit" && (
+                                                                            <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
+                                                                                <FaRegEdit />
+                                                                            </Link>
+                                                                        )
+                                                                    }
+                                                                    {
+                                                                        get(ac, "type") === "trash" && (
+                                                                            <button className='btn btn-sm' onClick={ac.onClick}>
+                                                                                <BiTrash />
+                                                                            </button>
+                                                                        )
+                                                                    }
+                                                                </Fragment>
+                                                            )
+                                                        })
+                                                    }
+                                                </td>
+                                                )
+                                            }
                                         </tr>
                                     )
                                 })

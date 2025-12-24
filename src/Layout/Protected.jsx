@@ -40,7 +40,7 @@ const Protected = () => {
 
   return (
     <>
-      <Header />
+      <Header user={user} />
       <HeaderSpacer />
       {
         isEmpty(user) && (

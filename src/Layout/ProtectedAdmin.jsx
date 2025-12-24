@@ -24,7 +24,6 @@ const ProtectedAdmin = () => {
       const response = await api.post("/profile", {
         token
       });
-      console.log(response);
 
       if (import.meta.env.VITE_APP_SUPER_ADMIN !== get(response, "data.data.role")) {
         setError("You do not have permission to access this page");
@@ -50,7 +49,7 @@ const ProtectedAdmin = () => {
 
   return (
     <>
-      <Header />
+      <Header user={user} />
       <HeaderSpacer />
       {
         isEmpty(user) && !error && (

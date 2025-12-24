@@ -4,7 +4,7 @@ import arrayMutators from 'final-form-arrays';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { BiTrash } from "../../components/Icons";
@@ -21,7 +21,7 @@ import api from '../../api/v1';
 
 const ServiceItem = ({ values, name, form }) => {
     const category = get(values, `${name}.category`);
-    
+
     useEffect(() => {
         if (category === 'CONTRACT') {
             form.change(`${name}.amount`, '');
@@ -104,11 +104,21 @@ const Repeater = ({ values, fields, form }) => {
 const BillEntryForm = () => {
     const navigate = useNavigate();
     const [fetching, setFetching] = useState(false);
+    const { bill_no } = useParams();
+    const [initialValues, setInitialValues] = useState({
+        "services": [{}],
+        "date": new Date().toISOString()
+    })
 
     const onSubmit = async (data) => {
         setFetching(true);
         try {
-            const response = await api.post("/bill-entry", data);
+            let response;
+            if (bill_no) {
+                response = await api.patch(`/bill-entry/${bill_no}`, data);
+            } else {
+                response = await api.post("/bill-entry", data);
+            }
             const status = response.status;
             if (status === 200) {
                 toast.success("Bill Entry created");
@@ -121,6 +131,21 @@ const BillEntryForm = () => {
         setFetching(false);
     }
 
+    const getBillEntry = async () => {
+        try {
+            const response = await api.get(`/bill-entry?bill_no=${bill_no}`);
+            setInitialValues(get(response, "data.list.0"));
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    useEffect(() => {
+        if (bill_no) {
+            getBillEntry();
+        }
+    }, [bill_no]);
+
     return (
         <>
             <MetaTag title="Create Bill Entry" />
@@ -130,10 +155,7 @@ const BillEntryForm = () => {
                     mutators={{
                         ...arrayMutators
                     }}
-                    initialValues={{
-                        "services": [{}],
-                        "date": new Date().toISOString()
-                    }}
+                    initialValues={initialValues}
                     render={({ handleSubmit, values, valid, form }) => {
                         const { services, ...rest } = values;
                         const rows = map(services, (service) => ({ ...service, ...rest }));
@@ -150,7 +172,7 @@ const BillEntryForm = () => {
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="billEntryBillNo" className="form-label">Bill No.</label>
-                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" />
+                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" disabled={bill_no} />
                                 </div>
                                 <div className='mb-3 pt-3 border rounded border-success'>
                                     <FieldArray name="services" >

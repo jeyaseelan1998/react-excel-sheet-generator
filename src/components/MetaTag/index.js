@@ -1,6 +1,7 @@
 import React from 'react';
 import { get } from 'lodash';
 import $ from 'jquery-slim';
+import { words } from '../../utils/constants';
 
 const generateUrl = () => {};
 const appendBaseUrl = () => {};
@@ -44,7 +45,7 @@ export default class MetaTag extends React.Component {
         }
 
         const oldDocumentTitle = document.title;
-        document.title = title + " | " + "XLSX Generator";
+        document.title = title + " | " + words.appName;
         this.setMeta("description", description);
         this.setMeta("keywords", keywords);
         this.setShareMeta("og:url", window.location.pathname, true);

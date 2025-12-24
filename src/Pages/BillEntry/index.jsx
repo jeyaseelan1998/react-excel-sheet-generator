@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import MetaTag from '../../components/MetaTag';
-import { Center } from '../../components';
+import { Center, Spinner } from '../../components';
 import api from '../../api/v1';
 import { toast } from 'react-toastify';
 import { get, map, flattenDepth } from 'lodash';
 import Table from '../../components/Table';
 import { COLUMNS, PREVIEW_LIST_COLUMNS } from './Helper';
-import { RiMenuAddFill, RiFileExcel2Line } from "../../components/Icons";
+import { RiMenuAddFill, RiFileExcel2Line, RiCloseLine } from "../../components/Icons";
 import { Link } from 'react-router-dom';
 import { downloadExcel } from '../../utils/excel';
+import DialogBox from '../../components/DialogBox';
 
 const BillEntryList = () => {
     const [list, setList] = useState([]);
+    const [popup, setPopup] = useState(false);
 
     const getList = async () => {
         try {
@@ -60,6 +62,16 @@ const BillEntryList = () => {
                             create
                             actions={[
                                 {
+                                    type: "view",
+                                    key: "bill_no",
+                                    onClick: (bill_no) => {
+                                        const row = list.find(i => i.bill_no === bill_no);
+                                        const { services, ...rest } = row;
+                                        const rows = map(services, (service) => ({ ...service, ...rest }));
+                                        setPopup(rows);
+                                    }
+                                },
+                                {
                                     type: "edit",
                                     key: "bill_no",
                                     path: "/bill-entry"
@@ -70,6 +82,30 @@ const BillEntryList = () => {
                                 // }
                             ]}
                         />
+                        {
+                            popup !== false && (
+                                <Suspense fallback={<Spinner />}>
+                                    <DialogBox type="fullscreen" onClose={() => setPopup(false)}
+                                        content={(onCloseHandler) => {
+
+                                            return (
+                                                <div className='d-flex h-100 flex-column'>
+                                                    <button className='btn btn-sm btn-light align-self-end mb-2' onClick={onCloseHandler}>
+                                                        <RiCloseLine />
+                                                    </button>
+                                                    <div className='overflow-auto'>
+                                                        <Table
+                                                            rows={popup}
+                                                            columns={COLUMNS}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        }}
+                                    />
+                                </Suspense>
+                            )
+                        }
                     </div>
                 </div>
             </Center>
