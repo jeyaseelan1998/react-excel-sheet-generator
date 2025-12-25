@@ -13,22 +13,25 @@ import DialogBox from '../../components/DialogBox';
 
 const BillEntryList = () => {
     const [list, setList] = useState([]);
+    const [fetching, setFetching] = useState(false);
     const [popup, setPopup] = useState(false);
 
     const getList = async () => {
+        setFetching(true);
         try {
             const response = await api.get("/bill-entry?order=date_desc")
             setList(get(response, "data.list"));
         } catch (error) {
             toast.error(get(error, "message"));
         }
+        setFetching(false);
     }
 
     useEffect(() => {
         getList();
     }, [])
 
-    const exportExsx = async () => {
+    const exportXLSX = async () => {
         try {
             const updatedList = map(list, (item) => {
                 const { services, ...rest } = item;
@@ -46,7 +49,7 @@ const BillEntryList = () => {
             <MetaTag title="" />
             <Center>
                 <div className='py-5 mt-2 text-center position-relative'>
-                    <button onClick={exportExsx} className='btn btn-success position-absolute top-0 right-5 d-flex align-items-center'>
+                    <button onClick={exportXLSX} className='btn btn-success position-absolute top-0 right-5 d-flex align-items-center'>
                         <span className='pe-2'>Export</span>
                         <RiFileExcel2Line />
                     </button>
@@ -54,59 +57,76 @@ const BillEntryList = () => {
                         <span className='pe-2'>Create</span>
                         <RiMenuAddFill />
                     </Link>
-                    <div className='overflow-auto'>
-                        <Table
-                            columns={PREVIEW_LIST_COLUMNS}
-                            rows={list}
-                            export
-                            create
-                            actions={[
+                    {
+                        fetching === true && (
+                            <div className='d-flex justify-content-center pt-5'>
+                                <Spinner />
+                            </div>
+                        )
+                    }
+                    {
+                        fetching === false && (
+                            <div className='overflow-auto'>
+                                <Table
+                                    columns={PREVIEW_LIST_COLUMNS}
+                                    rows={list}
+                                    export
+                                    create
+                                    actions={[
+                                        {
+                                            type: "view",
+                                            key: "bill_no",
+                                            onClick: (bill_no) => {
+                                                const row = list.find(i => i.bill_no === bill_no);
+                                                const { services, ...rest } = row;
+                                                const rows = map(services, (service) => ({ ...service, ...rest }));
+                                                setPopup(rows);
+                                            }
+                                        },
+                                        {
+                                            type: "edit",
+                                            key: "bill_no",
+                                            path: "/bill-entry"
+                                        },
+                                        {
+                                            type: "trash",
+                                            key: "bill_no",
+                                            onClick: async (bill_no) => {
+                                                try {
+                                                    const response = await api.delete(`/bill-entry/${bill_no}`);
+                                                    if (response.status === 200) {
+                                                        toast.info("Bill Entry deleted");
+                                                        setList(prevList => prevList.filter(item => item.bill_no !== bill_no));
+                                                    }
+                                                } catch (error) {
+                                                    console.log(error);
+                                                    toast.error(error.message);
+                                                }
+                                            }
+                                        }
+                                    ]}
+                                />
                                 {
-                                    type: "view",
-                                    key: "bill_no",
-                                    onClick: (bill_no) => {
-                                        const row = list.find(i => i.bill_no === bill_no);
-                                        const { services, ...rest } = row;
-                                        const rows = map(services, (service) => ({ ...service, ...rest }));
-                                        setPopup(rows);
-                                    }
-                                },
-                                {
-                                    type: "edit",
-                                    key: "bill_no",
-                                    path: "/bill-entry"
-                                },
-                                // {
-                                //     type: "trash",
-                                //     onClick: () => { }
-                                // }
-                            ]}
-                        />
-                        {
-                            popup !== false && (
-                                <Suspense fallback={<Spinner />}>
-                                    <DialogBox type="fullscreen" onClose={() => setPopup(false)}
-                                        content={(onCloseHandler) => {
-
-                                            return (
-                                                <div className='d-flex h-100 flex-column'>
-                                                    <button className='btn btn-sm btn-light align-self-end mb-2' onClick={onCloseHandler}>
-                                                        <RiCloseLine />
-                                                    </button>
-                                                    <div className='overflow-auto'>
-                                                        <Table
-                                                            rows={popup}
-                                                            columns={COLUMNS}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )
-                                        }}
-                                    />
-                                </Suspense>
-                            )
-                        }
-                    </div>
+                                    popup !== false && (
+                                        <Suspense fallback={<Spinner />}>
+                                            <DialogBox type="fullscreen" onClose={() => setPopup(false)}
+                                                content={() => {
+                                                    return (
+                                                        <div className='overflow-auto'>
+                                                            <Table
+                                                                rows={popup}
+                                                                columns={COLUMNS}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            />
+                                        </Suspense>
+                                    )
+                                }
+                            </div>
+                        )
+                    }
                 </div>
             </Center>
         </>

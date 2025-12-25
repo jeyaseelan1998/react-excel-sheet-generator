@@ -1,5 +1,5 @@
 import { get, map } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import arrayMutators from 'final-form-arrays';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
@@ -9,15 +9,15 @@ import { toast } from 'react-toastify';
 
 import { BiTrash } from "../../components/Icons";
 import { Center, Spinner, Text } from '../../components';
-import { required } from '../../utils/validate';
+import { isNumberOnly, required } from '../../utils/validate';
 import MetaTag from '../../components/MetaTag';
 import Table from '../../components/Table';
-import BSModal from '../../components/BSModal';
 import { categoryOptions, COLUMNS } from './Helper';
 import DatePickerField from '../../components/Fields/DatePicker';
 
 import style from "./style.module.css";
 import api from '../../api/v1';
+import DialogBox from '../../components/DialogBox';
 
 const ServiceItem = ({ values, name, form }) => {
     const category = get(values, `${name}.category`);
@@ -40,8 +40,9 @@ const ServiceItem = ({ values, name, form }) => {
                 <Field name={`${name}.category`} validate={required}>
                     {({ input, meta }) => (
                         <>
-                            <label className="form-label">Category</label>
+                            <label className="form-label">Category*</label>
                             <Select
+                                required
                                 name={input.name}
                                 options={categoryOptions}
                                 value={categoryOptions.find(i => i.value === get(values, `${name}.category`))}
@@ -53,22 +54,22 @@ const ServiceItem = ({ values, name, form }) => {
                 </Field>
             </div>
             <div className="mb-3">
-                <label htmlFor={`${name}billEntryQty`} className="form-label">QTY</label>
-                <Field name={`${name}.qty`} component="input" type='number' className="form-control" id={`${name}billEntryQty`} />
+                <label htmlFor={`${name}billEntryQty`} className="form-label">Quantity*</label>
+                <Field name={`${name}.qty`} component="input" className="form-control" id={`${name}billEntryQty`} validate={isNumberOnly} required />
             </div>
             {
                 category !== 'CONTRACT' && (
                     <div className="mb-3">
-                        <label htmlFor={`${name}billEntryAmount`} className="form-label">Amount <span className='small align-middle'>(in rupees)</span></label>
-                        <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} />
+                        <label htmlFor={`${name}billEntryAmount`} className="form-label">Amount* <span className='small align-middle'>(in rupees)</span></label>
+                        <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} validate={isNumberOnly} required  />
                     </div>
                 )
             }
             {
                 category === 'CONTRACT' && (
                     <div className="mb-3">
-                        <label htmlFor={`billEntryAmc`} className="form-label">AMC <span className='small align-middle'>(in rupees)</span></label>
-                        <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} />
+                        <label htmlFor={`billEntryAmc`} className="form-label">AMC* <span className='small align-middle'>(in rupees)</span></label>
+                        <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} validate={isNumberOnly} required  />
                     </div>
                 )
             }
@@ -104,6 +105,7 @@ const Repeater = ({ values, fields, form }) => {
 const BillEntryForm = () => {
     const navigate = useNavigate();
     const [fetching, setFetching] = useState(false);
+    const [popup, setPopup] = useState(false);
     const { bill_no } = useParams();
     const [initialValues, setInitialValues] = useState({
         "services": [{}],
@@ -123,7 +125,6 @@ const BillEntryForm = () => {
             if (status === 200) {
                 toast.success("Bill Entry created");
                 navigate("/bill-entry");
-                window.location.href = '/bill-entry';
             }
         } catch (error) {
             toast.error(get(error, 'response.data.message') || error.message);
@@ -157,25 +158,29 @@ const BillEntryForm = () => {
                     }}
                     initialValues={initialValues}
                     render={({ handleSubmit, values, valid, form }) => {
-                        const { services, ...rest } = values;
-                        const rows = map(services, (service) => ({ ...service, ...rest }));
+
+                        const onHandlePreview = () => {
+                            const { services, ...rest } = values;
+                            const rows = map(services, (service) => ({ ...service, ...rest }));
+                            setPopup(rows);
+                        }
 
                         return (
                             <form onSubmit={handleSubmit} className='row py-5 px-3 px-sm-0 needs-validation'>
                                 <div className="mb-5 col-12 d-flex align-items-center justify-content-end">
-                                    <Text className="d-inline pe-3 m-0 fw-bold">Bill Entry Date</Text>
-                                    <Field name="date" component={DatePickerField} className="form-control" />
+                                    <Text className="d-inline pe-3 m-0 fw-bold">Bill Entry Date*</Text>
+                                    <Field name="date" component={DatePickerField} className="form-control" validate={required} />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="billEntryEngineerName" className="form-label">Engineer Name</label>
-                                    <Field name="engineer_name" component="input" type='text' className="form-control" id="billEntryEngineerName" />
+                                    <label htmlFor="billEntryEngineerName" className="form-label">Engineer Name*</label>
+                                    <Field name="engineer_name" component="input" type='text' className="form-control" id="billEntryEngineerName" validate={required} required />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="billEntryBillNo" className="form-label">Bill No.</label>
-                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" disabled={bill_no} />
+                                    <label htmlFor="billEntryBillNo" className="form-label">Bill No.*</label>
+                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" disabled={bill_no} validate={isNumberOnly} required />
                                 </div>
                                 <div className='mb-3 pt-3 border rounded border-success'>
-                                    <FieldArray name="services" >
+                                    <FieldArray name="services">
                                         {
                                             ({ fields }) => (
                                                 <Repeater values={values} fields={fields} form={form} />
@@ -184,12 +189,12 @@ const BillEntryForm = () => {
                                     </FieldArray>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="billEntryCustomerName" className="form-label">Customer Name</label>
-                                    <Field name="customer_name" component="input" type='text' className="form-control" id="billEntryCustomerName" />
+                                    <label htmlFor="billEntryCustomerName" className="form-label">Customer Name*</label>
+                                    <Field name="customer_name" component="input" type='text' className="form-control" id="billEntryCustomerName" validate={required} required />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="billEntryPhoneNumber" className="form-label">Phone Number</label>
-                                    <Field name="phone_number" component="input" type='text' className="form-control" id="billEntryPhoneNumber" />
+                                    <label htmlFor="billEntryPhoneNumber" className="form-label">Phone Number*</label>
+                                    <Field name="phone_number" component="input" type='text' className="form-control" id="billEntryPhoneNumber" validate={isNumberOnly} required />
                                 </div>
                                 <div className="mb-3 col-12">
                                     <label htmlFor="billEntryCallType" className="form-label">Call Type</label>
@@ -199,43 +204,57 @@ const BillEntryForm = () => {
                                     <label htmlFor="billEntryNotes" className="form-label">Notes</label>
                                     <Field name="notes" component="textarea" className="form-control" id="billEntryNotes" />
                                 </div>
-                                <div className='col-12 text-center'>
-                                    <div className='mt-3'>
-                                        <BSModal
-                                            title='Preview'
-                                            popupDisabled={valid === false}
-                                            triggerLabel='Preview'
-                                            yesLabel={
-                                                <>
-                                                    {
-                                                        !fetching && (
-                                                            <button type='button' className="btn btn-info w-25" disabled={!valid} onClick={handleSubmit}>
-                                                                Submit
-                                                            </button>
-                                                        )
-                                                    }
-                                                    {
-                                                        fetching && (
-                                                            <div className="btn btn-info opacity-50 w-25 d-flex justify-content-center">
-                                                                <Spinner />
-                                                            </div>
-                                                        )
-                                                    }
-                                                </>
-                                            }
-                                            size="xl"
-                                        >
-                                            {
-                                                valid === true && (
-                                                    <Table
-                                                        rows={rows}
-                                                        columns={COLUMNS}
-                                                    />
-                                                )
-                                            }
-                                        </BSModal>
-                                    </div>
+
+                                <div className='text-center mt-3'>
+                                    <button type='button' className="btn btn-info px-3" disabled={!valid} onClick={onHandlePreview}>
+                                        Preview
+                                    </button>
                                 </div>
+                                {
+                                    popup && (
+                                        <Suspense fallback={<Spinner />}>
+                                            <DialogBox
+                                                dialogClass="big"
+                                                title="Preview"
+                                                onClose={() => setPopup(false)}
+                                                content={() => {
+                                                    return (
+                                                        <div className='d-flex h-100 flex-column'>
+                                                            <div className='overflow-auto'>
+                                                                <Table
+                                                                    rows={popup}
+                                                                    columns={COLUMNS}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }}
+
+                                                buttons={(onCloseHandler) => {
+                                                    return (
+                                                        <>
+                                                            <button type="button" className="btn btn-secondary me-3" onClick={onCloseHandler}>Close</button>
+                                                            {
+                                                                !fetching && (
+                                                                    <button type='button' className="btn btn-info w-25" disabled={!valid} onClick={handleSubmit}>
+                                                                        Submit
+                                                                    </button>
+                                                                )
+                                                            }
+                                                            {
+                                                                fetching && (
+                                                                    <div className="btn btn-info opacity-50 w-25 d-flex justify-content-center">
+                                                                        <Spinner />
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        </>
+                                                    )
+                                                }}
+                                            />
+                                        </Suspense>
+                                    )
+                                }
                             </form>
                         )
                     }}

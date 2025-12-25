@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import $ from 'jquery-slim';
 import ModalBase from './ModalBase';
+import { RiCloseLine } from "../Icons";
 import style from './style.module.css';
 
 export default function DialogBox(props) {
@@ -37,8 +38,17 @@ export default function DialogBox(props) {
         return (
             <ModalBase>
                 <div className={`${mediaDialog ? `${mediaDialog}` : `${style.dialogBoxOverlay} ${style.fullScreen}${className ? " " + className : ""}${openClass}${closeClass}`} `}>
-                    {content && <>{content(onCloseHandler)}</>}
-                    {children && <>{children}</>}
+                    <div className='d-flex h-100 w-100 flex-column overflow-hidden position-relative'>
+                        {
+                            onClose && (
+                                <button className='btn btn-sm btn-light align-self-end mb-2' onClick={onCloseHandler}>
+                                    <RiCloseLine />
+                                </button>
+                            )
+                        }
+                        {content && <>{content(onCloseHandler)}</>}
+                        {children && <>{children}</>}
+                    </div>
                 </div>
             </ModalBase>
         )
@@ -57,7 +67,7 @@ export default function DialogBox(props) {
                         </div>
                         {content && <div className={style.dialogContent}>{content(onCloseHandler)}</div>}
                         {children && <div className={style.dialogContent}>{children}</div>}
-                        <div className={style.dialogFooter}>{buttons}</div>
+                        <div className={style.dialogFooter}>{buttons(onCloseHandler)}</div>
                     </div>
                 </div>
             </ModalBase>

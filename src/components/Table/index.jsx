@@ -43,6 +43,8 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                                     const type = get(col, 'type');
                                                     let value = get(row, key, def);
 
+                                                    if ([null, '', undefined].includes(value) && def) value = def;
+
                                                     if (type === "date") {
                                                         value = dateFormat(value);
                                                     }
@@ -58,37 +60,37 @@ const Table = ({ rows = [], columns = [], actions }) => {
 
                                             {
                                                 actions && (
-                                                <td className='position-relative'>
-                                                    {
-                                                        actions.map((ac, idx) => {
-                                                            return (
-                                                                <Fragment key={idx}>
-                                                                    {
-                                                                        get(ac, "type") === "view" && (
-                                                                            <button className='btn btn-sm' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
-                                                                                <FaEye />
-                                                                            </button>
-                                                                        )
-                                                                    }
-                                                                    {
-                                                                        get(ac, "type") === "edit" && (
-                                                                            <Link className='btn btn-sm' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
-                                                                                <FaRegEdit />
-                                                                            </Link>
-                                                                        )
-                                                                    }
-                                                                    {
-                                                                        get(ac, "type") === "trash" && (
-                                                                            <button className='btn btn-sm' onClick={ac.onClick}>
-                                                                                <BiTrash />
-                                                                            </button>
-                                                                        )
-                                                                    }
-                                                                </Fragment>
-                                                            )
-                                                        })
-                                                    }
-                                                </td>
+                                                    <td className='position-relative d-flex justify-content-center'>
+                                                        {
+                                                            actions.map((ac, idx) => {
+                                                                return (
+                                                                    <Fragment key={idx}>
+                                                                        {
+                                                                            get(ac, "type") === "view" && (
+                                                                                <button className='btn btn-sm link-primary' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
+                                                                                    <FaEye />
+                                                                                </button>
+                                                                            )
+                                                                        }
+                                                                        {
+                                                                            get(ac, "type") === "edit" && (
+                                                                                <Link className='btn btn-sm link-primary' to={`${get(ac, 'path')}/${get(row, get(ac, 'key', 'id'))}`}>
+                                                                                    <FaRegEdit />
+                                                                                </Link>
+                                                                            )
+                                                                        }
+                                                                        {
+                                                                            get(ac, "type") === "trash" && (
+                                                                                <button className='btn btn-sm link-danger' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
+                                                                                    <BiTrash />
+                                                                                </button>
+                                                                            )
+                                                                        }
+                                                                    </Fragment>
+                                                                )
+                                                            })
+                                                        }
+                                                    </td>
                                                 )
                                             }
                                         </tr>
