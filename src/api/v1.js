@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-var api = axios.create({
+var v1Api = axios.create({
     baseURL: import.meta.env.VITE_APP_API_URL,
     withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
+v1Api.interceptors.request.use((config) => {
     let conf = {
         ...config,
         headers: {
@@ -16,10 +16,10 @@ api.interceptors.request.use((config) => {
     return conf;
 })
 
-api.interceptors.response.use(response => {
+v1Api.interceptors.response.use(response => {
     return response;
 }, (error) => {
     return Promise.reject(error);
 })
 
-export default api;
+export default v1Api;

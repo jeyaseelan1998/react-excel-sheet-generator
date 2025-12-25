@@ -1,23 +1,20 @@
 import { get, map } from 'lodash';
-import React, { Suspense, useEffect, useState } from 'react';
-import arrayMutators from 'final-form-arrays';
-import { Field, Form } from 'react-final-form';
-import { FieldArray } from 'react-final-form-arrays';
-import Select from 'react-select';
-import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Field, Form } from 'react-final-form';
+import { useNavigate, useParams } from 'react-router-dom';
+import React, { Suspense, useEffect, useState } from 'react';
+import Select from 'react-select';
+import arrayMutators from 'final-form-arrays';
 
-import { BiTrash } from "../../components/Icons";
 import { Center, Spinner, Text } from '../../components';
 import { isNumberOnly, required } from '../../utils/validate';
-import MetaTag from '../../components/MetaTag';
-import Table from '../../components/Table';
 import { categoryOptions, COLUMNS } from './Helper';
-import DatePickerField from '../../components/Fields/DatePicker';
-
-import style from "./style.module.css";
 import api from '../../api/v1';
+import Table from '../../components/Table';
+import MetaTag from '../../components/MetaTag';
 import DialogBox from '../../components/DialogBox';
+import Repeater from '../../components/Fields/Repeater';
+import DatePickerField from '../../components/Fields/DatePicker';
 
 const ServiceItem = ({ values, name, form }) => {
     const category = get(values, `${name}.category`);
@@ -61,7 +58,7 @@ const ServiceItem = ({ values, name, form }) => {
                 category !== 'CONTRACT' && (
                     <div className="mb-3">
                         <label htmlFor={`${name}billEntryAmount`} className="form-label">Amount* <span className='small align-middle'>(in rupees)</span></label>
-                        <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} validate={isNumberOnly} required  />
+                        <Field name={`${name}.amount`} component="input" type='text' className="form-control" id={`${name}billEntryAmount`} validate={isNumberOnly} required />
                     </div>
                 )
             }
@@ -69,35 +66,10 @@ const ServiceItem = ({ values, name, form }) => {
                 category === 'CONTRACT' && (
                     <div className="mb-3">
                         <label htmlFor={`billEntryAmc`} className="form-label">AMC* <span className='small align-middle'>(in rupees)</span></label>
-                        <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} validate={isNumberOnly} required  />
+                        <Field name={`${name}.amc`} component="input" type='text' className="form-control" id={`billEntryAmc`} validate={isNumberOnly} required />
                     </div>
                 )
             }
-        </div>
-    )
-}
-
-const Repeater = ({ values, fields, form }) => {
-    return (
-        <div className='mb-3'>
-            <Text className='fw-bold'>Service List</Text>
-            {
-                fields.map((name, index) => {
-                    return (
-                        <div key={index} className='p-3 border border-2 my-3 rounded position-relative'>
-                            <ServiceItem values={values} name={name} form={form} />
-                            {
-                                index !== 0 && (
-                                    <button type='button' className={`btn btn-sm btn-danger ${style.delete}`} onClick={() => fields.remove(index)}>
-                                        <BiTrash />
-                                    </button>
-                                )
-                            }
-                        </div>
-                    )
-                })
-            }
-            <button type='button' className='btn btn-warning' onClick={() => fields.push({})}>Add more</button>
         </div>
     )
 }
@@ -106,7 +78,7 @@ const BillEntryForm = () => {
     const navigate = useNavigate();
     const [fetching, setFetching] = useState(false);
     const [popup, setPopup] = useState(false);
-    const { bill_no } = useParams();
+    const { id } = useParams();
     const [initialValues, setInitialValues] = useState({
         "services": [{}],
         "date": new Date().toISOString()
@@ -116,8 +88,8 @@ const BillEntryForm = () => {
         setFetching(true);
         try {
             let response;
-            if (bill_no) {
-                response = await api.patch(`/bill-entry/${bill_no}`, data);
+            if (id) {
+                response = await api.patch(`/bill-entry/${id}`, data);
             } else {
                 response = await api.post("/bill-entry", data);
             }
@@ -134,7 +106,7 @@ const BillEntryForm = () => {
 
     const getBillEntry = async () => {
         try {
-            const response = await api.get(`/bill-entry?bill_no=${bill_no}`);
+            const response = await api.get(`/bill-entry?bill_no=${id}`);
             setInitialValues(get(response, "data.list.0"));
         } catch (error) {
             toast.error(error.message);
@@ -142,10 +114,10 @@ const BillEntryForm = () => {
     }
 
     useEffect(() => {
-        if (bill_no) {
+        if (id) {
             getBillEntry();
         }
-    }, [bill_no]);
+    }, [id]);
 
     return (
         <>
@@ -177,16 +149,19 @@ const BillEntryForm = () => {
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="billEntryBillNo" className="form-label">Bill No.*</label>
-                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" disabled={bill_no} validate={isNumberOnly} required />
+                                    <Field name="bill_no" component="input" type='text' className="form-control" id="billEntryBillNo" disabled={id} validate={isNumberOnly} required />
                                 </div>
                                 <div className='mb-3 pt-3 border rounded border-success'>
-                                    <FieldArray name="services">
-                                        {
-                                            ({ fields }) => (
-                                                <Repeater values={values} fields={fields} form={form} />
+                                    <Repeater
+                                        values={values}
+                                        form={form}
+                                        title="Service List"
+                                        content={({ values, name, form }) => {
+                                            return (
+                                                <ServiceItem values={values} name={name} form={form} />
                                             )
-                                        }
-                                    </FieldArray>
+                                        }}
+                                    />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="billEntryCustomerName" className="form-label">Customer Name*</label>
@@ -204,7 +179,6 @@ const BillEntryForm = () => {
                                     <label htmlFor="billEntryNotes" className="form-label">Notes</label>
                                     <Field name="notes" component="textarea" className="form-control" id="billEntryNotes" />
                                 </div>
-
                                 <div className='text-center mt-3'>
                                     <button type='button' className="btn btn-info px-3" disabled={!valid} onClick={onHandlePreview}>
                                         Preview

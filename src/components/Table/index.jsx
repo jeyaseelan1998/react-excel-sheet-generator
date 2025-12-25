@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
 import { get, map } from 'lodash';
-import { dateFormat } from './format';
-
-import { FaRegEdit, BiTrash, FaEye } from "../Icons";
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+
+import { renderValue } from './CellValue';
+import { FaRegEdit, BiTrash, FaEye } from "../Icons";
 import Text from '../Text';
 
 const Table = ({ rows = [], columns = [], actions }) => {
@@ -38,22 +38,8 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                         <tr key={index}>
                                             {
                                                 map(columns, (col, idx) => {
-                                                    const key = get(col, 'key');
-                                                    const def = get(col, 'default');
-                                                    const type = get(col, 'type');
-                                                    let value = get(row, key, def);
-
-                                                    if ([null, '', undefined].includes(value) && def) value = def;
-
-                                                    if (type === "date") {
-                                                        value = dateFormat(value);
-                                                    }
-                                                    if (type === "length") {
-                                                        value = (value || []).length;
-                                                    }
-
                                                     return (
-                                                        <td key={idx} className='text-nowrap'>{value}</td>
+                                                        <td key={idx} className='text-nowrap'>{renderValue(col, row)}</td>
                                                     )
                                                 })
                                             }

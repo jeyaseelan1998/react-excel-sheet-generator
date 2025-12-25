@@ -35,7 +35,7 @@ const App = () => {
         <Route path='/' element={SuspendPage(<Protected />)}>
           <Route index element={SuspendPage(<Home />)} />
           <Route path='bill-entry/create' element={SuspendPage(<BillEntryForm />)} />
-          <Route path='bill-entry/:bill_no' element={SuspendPage(<BillEntryForm />)} />
+          <Route path='bill-entry/:id' element={SuspendPage(<BillEntryForm />)} />
           <Route path='bill-entry' element={SuspendPage(<BillEntry />)} />
           <Route path='history' element={SuspendPage(<History />)} />
         </Route>
