@@ -1,9 +1,9 @@
 import { BiTrash } from 'react-icons/bi';
-import { FaArrowAltCircleRight } from 'react-icons/fa';
-import { FaRegEdit, FaEye } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaRegEdit, FaEye, FaRecycle } from 'react-icons/fa';
 import { RiMenuAddFill, RiCloseLine } from "react-icons/ri";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { BiErrorAlt } from "react-icons/bi";
+import { IoMdClose } from "react-icons/io";
 
 export {
     BiTrash,
@@ -14,4 +14,6 @@ export {
     BiErrorAlt,
     FaEye,
     RiCloseLine,
+    IoMdClose,
+    FaRecycle,
 }

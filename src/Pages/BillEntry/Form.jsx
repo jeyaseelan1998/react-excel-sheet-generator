@@ -121,7 +121,7 @@ const BillEntryForm = () => {
 
     return (
         <>
-            <MetaTag title="Create Bill Entry" />
+            <MetaTag title={`${id ? 'Update' : 'Create'} Bill Entry`} />
             <Center>
                 <Form
                     onSubmit={onSubmit}
@@ -139,6 +139,7 @@ const BillEntryForm = () => {
 
                         return (
                             <form onSubmit={handleSubmit} className='row py-5 px-3 px-sm-0 needs-validation'>
+                                <Text className="d-inline pe-3 m-0 fst-italic text-danger mb-3">*Make sure to fill Mandatory fields</Text>
                                 <div className="mb-5 col-12 d-flex align-items-center justify-content-end">
                                     <Text className="d-inline pe-3 m-0 fw-bold">Bill Entry Date*</Text>
                                     <Field name="date" component={DatePickerField} className="form-control" validate={required} />

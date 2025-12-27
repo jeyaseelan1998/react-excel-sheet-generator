@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { get, map, flattenDepth } from 'lodash';
 import React, { useEffect, useState, Suspense } from 'react';
 
@@ -16,6 +16,7 @@ const BillEntryList = () => {
     const [list, setList] = useState([]);
     const [fetching, setFetching] = useState(false);
     const [popup, setPopup] = useState(false);
+    const { isSuperAdmin } = useOutletContext();
 
     const getList = async () => {
         setFetching(true);
@@ -47,7 +48,7 @@ const BillEntryList = () => {
 
     return (
         <>
-            <MetaTag title="" />
+            <MetaTag title="Bill Entry" />
             <Center>
                 <div className='py-5 mt-2 text-center position-relative'>
                     <button onClick={exportXLSX} className='btn btn-success position-absolute top-0 right-5 d-flex align-items-center'>
@@ -90,13 +91,46 @@ const BillEntryList = () => {
                                             path: "/bill-entry"
                                         },
                                         {
+                                            type: "restore",
+                                            key: "bill_no",
+                                            onClick: async (bill_no) => {
+                                                try {
+                                                    const response = await api.patch(`/bill-entry/${bill_no}`, { deleted: 0 });
+                                                    if (response.status === 200) {
+                                                        toast.info("Bill Entry restored");
+                                                        setList(prevList => prevList.map(item => item.bill_no === bill_no ? { ...item, deleted: 0 } : item));
+                                                    }
+                                                } catch (error) {
+                                                    console.log(error);
+                                                    toast.error(error.message);
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "delete",
+                                            key: "bill_no",
+                                            onClick: async (bill_no) => {
+                                                try {
+                                                    const response = await api.patch(`/bill-entry/${bill_no}`, { deleted: 1 });
+                                                    if (response.status === 200) {
+                                                        toast.info("Bill Entry deleted");
+                                                        setList(prevList => prevList.map(item => item.bill_no === bill_no ? { ...item, deleted: 1 } : item));
+                                                    }
+                                                } catch (error) {
+                                                    console.log(error);
+                                                    toast.error(error.message);
+                                                }
+                                            }
+                                        },
+                                        {
                                             type: "trash",
                                             key: "bill_no",
+                                            hasPermission: isSuperAdmin,
                                             onClick: async (bill_no) => {
                                                 try {
                                                     const response = await api.delete(`/bill-entry/${bill_no}`);
                                                     if (response.status === 200) {
-                                                        toast.info("Bill Entry deleted");
+                                                        toast.info("Bill Entry permanently deleted");
                                                         setList(prevList => prevList.filter(item => item.bill_no !== bill_no));
                                                     }
                                                 } catch (error) {
@@ -113,8 +147,10 @@ const BillEntryList = () => {
                                             <DialogBox type="fullscreen" onClose={() => setPopup(false)}
                                                 content={() => {
                                                     return (
-                                                        <div className='overflow-auto'>
+                                                        <div className='overflow-auto text-center'>
                                                             <Table
+                                                                // tableClass="table table-bordered border-primary"
+                                                                // thClass="table-light table-bordered border-primary"
                                                                 rows={popup}
                                                                 columns={COLUMNS}
                                                             />

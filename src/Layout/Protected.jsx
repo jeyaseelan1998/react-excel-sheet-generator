@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { deleteCookie, getCookie } from '../utils/storage';
+import { deleteCookie, getCookie, isSuperAdmin } from '../utils/storage';
 import Header from './Header';
 import { toast } from 'react-toastify';
 import { get, isEmpty } from 'lodash';
@@ -51,7 +51,7 @@ const Protected = () => {
       }
       {
         !isEmpty(user) && (
-          <Outlet context={{ user }} />
+          <Outlet context={{ user, isSuperAdmin: isSuperAdmin(user) }} />
         )
       }
     </>

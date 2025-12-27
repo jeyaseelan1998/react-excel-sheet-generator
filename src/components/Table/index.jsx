@@ -3,10 +3,10 @@ import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 import { renderValue } from './CellValue';
-import { FaRegEdit, BiTrash, FaEye } from "../Icons";
+import { FaRegEdit, BiTrash, FaEye, IoMdClose, FaRecycle } from "../Icons";
 import Text from '../Text';
 
-const Table = ({ rows = [], columns = [], actions }) => {
+const Table = ({ rows = [], columns = [], actions, tableClass, thClass }) => {
     return (
         <>
             {
@@ -16,9 +16,9 @@ const Table = ({ rows = [], columns = [], actions }) => {
             }
             {
                 rows && rows.length > 0 && (
-                    <table className="table table-striped">
-                        <thead>
-                            <tr className='table-dark text-nowrap'>
+                    <table className={tableClass ? tableClass : "table table-striped  text-center"}>
+                        <thead className={thClass ? thClass : 'table-dark'}>
+                            <tr className='text-nowrap'>
                                 {
                                     map(columns, (col) => (
                                         <th key={col.key} scope="col">{col.header}</th>
@@ -35,7 +35,7 @@ const Table = ({ rows = [], columns = [], actions }) => {
                             {
                                 map(rows, (row, index) => {
                                     return (
-                                        <tr key={index}>
+                                        <tr key={index} className={get(row, 'deleted') === 1 ? 'opacity-50' : ''}>
                                             {
                                                 map(columns, (col, idx) => {
                                                     return (
@@ -49,6 +49,7 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                                     <td className='position-relative d-flex justify-content-center'>
                                                         {
                                                             actions.map((ac, idx) => {
+                                                                if (get(ac, 'hasPermission') === false) return null;
                                                                 return (
                                                                     <Fragment key={idx}>
                                                                         {
@@ -66,9 +67,23 @@ const Table = ({ rows = [], columns = [], actions }) => {
                                                                             )
                                                                         }
                                                                         {
-                                                                            get(ac, "type") === "trash" && (
+                                                                            get(ac, "type") === "delete" && get(row, 'deleted') === 0 && (
                                                                                 <button className='btn btn-sm link-danger' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
                                                                                     <BiTrash />
+                                                                                </button>
+                                                                            )
+                                                                        }
+                                                                        {
+                                                                            get(ac, "type") === "restore" && get(row, 'deleted') === 1 && (
+                                                                                <button className='btn btn-sm link-success' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
+                                                                                    <FaRecycle />
+                                                                                </button>
+                                                                            )
+                                                                        }
+                                                                        {
+                                                                            get(ac, "type") === "trash" && get(row, 'deleted') === 1 && (
+                                                                                <button className='btn btn-sm link-danger' onClick={() => ac.onClick(get(row, get(ac, 'key', 'id')))}>
+                                                                                    <IoMdClose />
                                                                                 </button>
                                                                             )
                                                                         }

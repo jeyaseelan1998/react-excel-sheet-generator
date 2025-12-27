@@ -14,7 +14,7 @@ export const COLUMNS = [
     { header: "CATEGORY", key: "category", width: 45 },
     { header: "QTY", key: "qty", width: 15 },
     { header: "AMOUNT", key: "amount", width: 25, default: 'NIL' },
-    { header: "AMC", key: "amc", width: 25 },
+    { header: "AMC", key: "amc", width: 25, default: '-' },
     { header: "CUSTOMER NAME", key: "customer_name", width: 45 },
     { header: "PHONE NUMBER", key: "phone_number", width: 45 },
     { header: "CALL TYPE", key: "call_type", width: 45 },
