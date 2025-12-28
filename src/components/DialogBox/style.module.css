@@ -38,6 +38,7 @@
 
 .big .dialogBox {
     max-width: 1024px;
+    overflow: auto;
 }
 
 .dialogHeader {

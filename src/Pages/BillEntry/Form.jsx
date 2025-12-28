@@ -157,7 +157,7 @@ const BillEntryForm = () => {
                                         values={values}
                                         form={form}
                                         title="Service List"
-                                        content={({ values, name, form }) => {
+                                        render={({ values, name, form }) => {
                                             return (
                                                 <ServiceItem values={values} name={name} form={form} />
                                             )

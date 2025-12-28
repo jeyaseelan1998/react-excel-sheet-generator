@@ -6,7 +6,7 @@ import Text from '../Text';
 
 import style from "./style.module.css";
 
-const Repeater = ({ values, form, title, content }) => {
+const Repeater = ({ values, form, title, render }) => {
     return (
         <FieldArray name="services">
             {
@@ -20,7 +20,7 @@ const Repeater = ({ values, form, title, content }) => {
                                 return (
                                     <div key={index} className='p-3 border border-2 my-3 rounded position-relative'>
                                         {
-                                            content && content({ values, name, form })
+                                            render && render({ values, name, form })
                                         }
                                         {
                                             index !== 0 && (

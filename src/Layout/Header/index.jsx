@@ -6,7 +6,6 @@ import { Center, Text } from '../../components';
 import { words } from '../../utils/constants';
 
 import style from "./style.module.css";
-import { get } from 'lodash';
 import { BiExit } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import { deleteCookie, isSuperAdmin } from '../../utils/storage';
